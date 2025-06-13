@@ -3,6 +3,10 @@ import 'dotenv/config';
 import connectMongo from './utils/connectDb.js';
 import logger from './utils/logger.js';
 import initData from './data/initDestination.js';
+import destinationData from './data/destinationData.js';
+import destinationModel from './models/destinationModel.js';
+import tourPackageData from './data/tourPackageData';
+import tourPackages from './models/tourPackageModel.js';
 
 const app = express();
 const port = process.env.PORT;
@@ -18,3 +22,16 @@ connectMongo()
    .catch((e) => {
     logger.fatal("Failed to connect you with DataBase-", e.message);
    })
+
+initData(destinationModel, destinationData, 'destinations');
+initData(tourPackages, tourPackageData, "Tour Packages");
+
+app.get('/api/destinations', async(req, res) => {
+    const destinations = await destinationModel.find({});
+    return res.json({ destinations });
+})
+
+app.get('/api/packages/top-selling', async(req, res) => {
+    const packages = await tourPackages.find({});
+    return res.json({ packages });
+})
